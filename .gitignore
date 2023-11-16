@@ -1,0 +1,16 @@
+*
+!.gitignore
+!**/*.cpp
+!**/*.h
+!frame_gen/
+!frame_gen/frame_gen/
+!frame_gen/frame_gen/hls.app
+!frame_gen/frame_gen/solution1/
+!frame_gen/frame_gen/solution1/script.tcl
+!frame_gen/frame_gen/solution1/directives.tcl
+!frame_processing/
+!frame_processing/frame_processing/
+!frame_processing/frame_processing/hls.app
+!frame_processing/frame_processing/solution1/
+!frame_processing/frame_processing/solution1/script.tcl
+!frame_processing/frame_processing/solution1/directives.tcl
