@@ -1,4 +1,4 @@
-#include "frame_processing.h"
+#include "frame_gen.h"
 #include <cassert>
 #include <iostream>
 #include <stdio.h>
@@ -33,25 +33,21 @@ void printfb(pixconvert fb[FRAME_HEIGHT][FRAME_WIDTH]) {
 char showfb(pixconvert fb[FRAME_HEIGHT][FRAME_WIDTH]) {
 	using namespace cv;
 	Mat img(FRAME_HEIGHT, FRAME_WIDTH, CV_8UC3, (void*)fb);
-	cvtColor(img, img, COLOR_RBG2BGR);
+	cvtColor(img, img, COLOR_RGB2BGR);
 	imshow("Image", img);
 	return waitKey(1);
 }
 
 int main() {
 	auto fb = new pixconvert[FRAME_HEIGHT][FRAME_WIDTH]();
-	hls::stream<pixel> in, out;
-	pixel inpix, pix;
-	inpix.data = 0x0;
+	hls::stream<pixel> out;
+	pixel pix;
 	std::cout << "Starting Frame Gen:" << std::endl;
 	// Fill fb
 	while (true) {
 		for (int i = 0; i < FRAME_HEIGHT; i++) {
 			for (int j = 0; j < FRAME_WIDTH; j++) {
-				inpix.user = i == 0 && j == 0;
-				inpix.last = j == FRAME_WIDTH-1;
-				in << inpix;
-				frame_processing(out, in);
+				frame_gen(out);
 				out >> pix;
 				fb[i][j].i = pix.data;
 				assert((pix.user == 0) != (i == 0 && j == 0));
@@ -62,10 +58,7 @@ int main() {
 			break;
 		}
 	}
-
 	std::cout << "Completed Frame Gen" << std::endl;
-	// Somehow print fb?
-//	printfb(fb);
 	cv::destroyAllWindows();
 	delete[] fb;
 }

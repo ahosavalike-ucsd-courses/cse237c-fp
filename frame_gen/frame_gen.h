@@ -7,3 +7,5 @@
 
 typedef ap_uint<24> rgb;
 typedef hls::axis<rgb,1,1,1> pixel;
+
+void frame_gen(hls::stream<pixel> &out);
