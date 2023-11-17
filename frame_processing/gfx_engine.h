@@ -1,3 +1,5 @@
+#ifndef __GFX_ENGINE__
+#define __GFX_ENGINE__
 #include "consts_types.h"
 //#include <common/xf_headers.hpp>
 
@@ -39,3 +41,4 @@ typedef struct GfxEngine {
 		output << p;
 	}
 } GfxEngine;
+#endif

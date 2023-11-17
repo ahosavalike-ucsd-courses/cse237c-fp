@@ -6,40 +6,38 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 
-#pragma pack(1)
-typedef struct {
+typedef struct pix {
 	uint8_t r;
 	uint8_t g;
 	uint8_t b;
-} pixelrgb;
+	pix(): r(0), g(0), b(0) {}
+	pix(ap_uint<24> val):
+		r(val.range(23, 16)),
+		g(val.range(15, 8)),
+		b(val.range(7, 0))
+	{}
+} fbtype;
 
-#pragma pack(1)
-union pixconvert {
-	pixelrgb p;
-	unsigned int i : 24;
-};
-
-
-void printfb(pixconvert fb[FRAME_HEIGHT][FRAME_WIDTH]) {
+void printfb(fbtype fb[FRAME_HEIGHT][FRAME_WIDTH]) {
 	std::cout << "Framebuffer:" << std::endl;
 	for (int i = 0; i < FRAME_HEIGHT; i++) {
 		for (int j = 0; j < FRAME_WIDTH; j++) {
-			printf("(%02x, %02x, %02x) ", fb[i][j].p.r, fb[i][j].p.g, fb[i][j].p.b);
+			printf("(%02x, %02x, %02x) ", fb[i][j].r, fb[i][j].g, fb[i][j].b);
 		}
 		std::cout << std::endl;
 	}
 }
 
-char showfb(pixconvert fb[FRAME_HEIGHT][FRAME_WIDTH]) {
+char showfb(fbtype fb[FRAME_HEIGHT][FRAME_WIDTH]) {
 	using namespace cv;
 	Mat img(FRAME_HEIGHT, FRAME_WIDTH, CV_8UC3, (void*)fb);
-	cvtColor(img, img, COLOR_RBG2BGR);
+	cvtColor(img, img, COLOR_RGB2BGR);
 	imshow("Image", img);
 	return waitKey(1);
 }
 
 int main() {
-	auto fb = new pixconvert[FRAME_HEIGHT][FRAME_WIDTH]();
+	auto fb = new fbtype[FRAME_HEIGHT][FRAME_WIDTH]();
 	hls::stream<pixel> in, out;
 	pixel inpix, pix;
 	inpix.data = 0x0;
@@ -53,19 +51,19 @@ int main() {
 				in << inpix;
 				frame_processing(out, in);
 				out >> pix;
-				fb[i][j].i = pix.data;
+				fb[i][j] = pix.data.toRGB();
 				assert((pix.user == 0) != (i == 0 && j == 0));
 				assert((pix.last == 0) != (j == FRAME_WIDTH - 1));
 			}
 		}
+//		printfb(fb);
+//		break;
 		if(showfb(fb) == 'c') {
 			break;
 		}
 	}
 
 	std::cout << "Completed Frame Gen" << std::endl;
-	// Somehow print fb?
-//	printfb(fb);
 	cv::destroyAllWindows();
 	delete[] fb;
 }
