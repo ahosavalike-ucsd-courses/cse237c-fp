@@ -10,8 +10,8 @@ typedef struct GfxEngine {
 	ap_uint<11> y;
 	ap_uint<11> fc;
 	pixel p;
-	void read(hls::stream<pixel> &input) {
-		input >> p;
+	void read(pixel input) {
+		p = input;
 		if (p.user) {
 			x = y = 0;
 			fc++;	// Will overflow, only track till meaningful
@@ -26,12 +26,12 @@ typedef struct GfxEngine {
 			else
 				p.data = 0xffffff;
 	}
-	void write(hls::stream<pixel> &output) {
+	pixel write() {
 		x++;
 		if (p.last) {
 			y++;
 			x = 0;
 		}
-		output << p;
+		return p;
 	}
 } GfxEngine;

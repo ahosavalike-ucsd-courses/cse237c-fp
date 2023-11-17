@@ -5,7 +5,7 @@ void frame_gen(hls::stream<pixel> &output) {
 	pixel f;
 	f.data = 0x0;
 	f.keep = 0b111;
-	f.strb = 0b111;
+	f.strb = 0b0;
 	// Start of Frame
 	f.user = 1;
 	send_frame_height:
@@ -14,6 +14,7 @@ void frame_gen(hls::stream<pixel> &output) {
 		send_frame_width:
 		for (int j = 0; j < FRAME_WIDTH - 1; j++) {
 			output << f;
+			f.data = ~f.data;
 			f.user = 0;
 		}
 		// End of Line

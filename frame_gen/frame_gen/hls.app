@@ -1,4 +1,4 @@
-<project xmlns="com.autoesl.autopilot.project" top="frame_gen" name="frame_gen" projectType="C/C++">
+<project xmlns="com.autoesl.autopilot.project" name="frame_gen" top="frame_gen" projectType="C/C++">
     <includePaths/>
     <libraryPaths/>
     <Simulation>
