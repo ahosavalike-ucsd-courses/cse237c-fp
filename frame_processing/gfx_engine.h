@@ -12,8 +12,9 @@ typedef struct GfxEngine {
 	ap_uint<11> y;
 	ap_uint<11> fc;
 	pixel p;
+	bool valid;
 	struct GfxEngine& read(hls::stream<pixel> &input) {
-		input >> p;
+		valid = input.read_nb(p);
 		if (p.user) {
 			x = y = 0;
 			fc++;	// Will overflow, only track till meaningful
@@ -32,13 +33,14 @@ typedef struct GfxEngine {
 				p.data = 0xffffff;
 		return *this;
 	}
-	void write(hls::stream<pixel> &output) {
+	void write(hls::stream<pixel> &output, ap_uint<1> &valid) {
 		x++;
 		if (p.last) {
 			y++;
 			x = 0;
 		}
-		output << p;
+		valid = this->valid;
+		if (this->valid) output << p;
 	}
 } GfxEngine;
 #endif

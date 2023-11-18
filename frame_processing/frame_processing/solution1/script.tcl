@@ -10,7 +10,7 @@ add_files frame_processing.cpp -cflags "-IC:/Users/adyan/.Xilinx/vitis_hls/2023.
 add_files -tb frame_processing_tb.cpp -cflags "-IC:/Users/adyan/Projects/CSE237C/game/opencv/mingw_build/install/include -Wno-unknown-pragmas"
 open_solution "solution1" -flow_target vivado
 set_part {xc7z020-clg400-1}
-create_clock -period 4 -name default
+create_clock -period 10 -name default
 config_cosim -tool xsim
 config_export -format ip_catalog -rtl verilog -vivado_clock 10
 source "./frame_processing/solution1/directives.tcl"
