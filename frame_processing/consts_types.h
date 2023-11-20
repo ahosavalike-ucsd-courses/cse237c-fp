@@ -18,7 +18,19 @@ typedef struct rgb {
 		b(val.range(7, 0)),
 		g(val.range(15, 8))
 	{}
+	rgb(int v) {
+		ap_uint<24> val = v;
+		r = val.range(23, 16);
+		g = val.range(15, 8);
+		b = val.range(7, 0);
+	}
 	void operator = (ap_uint<24> val) {
+		r = val.range(23, 16);
+		g = val.range(15, 8);
+		b = val.range(7, 0);
+	}
+	void operator = (int v) {
+		ap_uint<24> val = v;
 		r = val.range(23, 16);
 		g = val.range(15, 8);
 		b = val.range(7, 0);

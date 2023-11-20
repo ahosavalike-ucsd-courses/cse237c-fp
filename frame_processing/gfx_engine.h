@@ -12,35 +12,15 @@ typedef struct GfxEngine {
 	ap_uint<11> y;
 	ap_uint<11> fc;
 	pixel p;
-	bool valid;
-	struct GfxEngine& read(hls::stream<pixel> &input) {
-		valid = input.read_nb(p);
-		if (p.user) {
-			x = y = 0;
-			fc++;	// Will overflow, only track till meaningful
-			if (fc > FRAME_HEIGHT)
-				fc = 1;
-		}
-		return *this;
-	}
-	struct GfxEngine& draw_diag() {
-		if (x == y)
-			if (x < fc)
-				p.data = 0x0000ff;
-			else if (x > fc)
-				p.data = 0xff0000;
-			else
-				p.data = 0xffffff;
-		return *this;
-	}
-	void write(hls::stream<pixel> &output, ap_uint<1> &valid) {
-		x++;
-		if (p.last) {
-			y++;
-			x = 0;
-		}
-		valid = this->valid;
-		if (this->valid) output << p;
-	}
+	struct GfxEngine& read(hls::stream<pixel> &input);
+	struct GfxEngine& draw_diag();
+	struct GfxEngine& draw_rect(rgb c, ap_uint<11> xi, ap_uint<11> yi, ap_uint<11> xj, ap_uint<11> yj);
+	void write(hls::stream<pixel> &output);
 } GfxEngine;
+
+typedef struct Game {
+	GfxEngine g;
+	void run(hls::stream<pixel> &output, hls::stream<pixel> &input);
+} Game;
+
 #endif

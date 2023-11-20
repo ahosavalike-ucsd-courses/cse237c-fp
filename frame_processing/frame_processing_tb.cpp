@@ -43,14 +43,13 @@ int main() {
 	inpix.data = 0x0;
 	std::cout << "Starting Frame Gen:" << std::endl;
 	// Fill fb
-	ap_uint<1> valid;
 	while (true) {
 		for (int i = 0; i < FRAME_HEIGHT; i++) {
 			for (int j = 0; j < FRAME_WIDTH; j++) {
 				inpix.user = i == 0 && j == 0;
 				inpix.last = j == FRAME_WIDTH-1;
 				in << inpix;
-				frame_processing(out, in, valid);
+				frame_processing(out, in);
 				out >> pix;
 				fb[i][j] = pix.data.toRGB();
 				assert((pix.user == 0) != (i == 0 && j == 0));
