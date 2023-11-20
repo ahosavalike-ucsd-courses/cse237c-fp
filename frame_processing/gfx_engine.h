@@ -47,6 +47,7 @@ typedef struct GfxEngine {
     pixel p;
     struct GfxEngine &read(hls::stream<pixel> &input);
     struct GfxEngine &draw(Shape s, rgb color, Point i, Point j);
+    struct GfxEngine &draw_num(ap_uint<4> n, rgb color, Point i);
     void write(hls::stream<pixel> &output);
 } GfxEngine;
 
