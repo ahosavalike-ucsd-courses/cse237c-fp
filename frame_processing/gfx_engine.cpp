@@ -22,9 +22,21 @@ struct GfxEngine& GfxEngine::draw_diag() {
 	return *this;
 }
 
-struct GfxEngine& GfxEngine::draw_rect(rgb c, ap_uint<11> xi, ap_uint<11> yi, ap_uint<11> xj, ap_uint<11> yj) {
-	if (x >= xi && x <= xj && y >= yi && y <= yj)
-		p.data = c;
+struct GfxEngine& GfxEngine::draw(shape s, rgb color, ap_uint<11> xi, ap_uint<11> yi, ap_uint<11> xj, ap_uint<11> yj) {
+	switch (s) {
+	case LINE:
+		if ((y - yi) * (xj - xi) == (x - xi) * (yj - yi))
+			p.data = color;
+		break;
+	case RECTANGLE:
+		if ((x >= xi && x <= xj && (y == yi || y == yj)) || (y >= yi && y <= yj && (x == xi || x == xj)))
+			p.data = color;
+		break;
+	case RECTANGLE_FILLED:
+		if (x >= xi && x <= xj && y >= yi && y <= yj)
+			p.data = color;
+		break;
+	}
 	return *this;
 }
 
@@ -35,8 +47,4 @@ void GfxEngine::write(hls::stream<pixel> &output) {
 		x = 0;
 	}
 	output << p;
-}
-
-void Game::run(hls::stream<pixel> &output, hls::stream<pixel> &input) {
-	g.read(input).draw_rect(0x00f0f0, g.fc, g.fc, g.fc+100, g.fc+100).draw_diag().write(output);
 }
