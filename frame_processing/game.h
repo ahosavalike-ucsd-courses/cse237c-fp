@@ -3,9 +3,9 @@
 #include "gfx_engine.h"
 
 typedef struct Game {
-	GfxEngine g;
+    GfxEngine g;
 
-	void run(hls::stream<pixel> &output, hls::stream<pixel> &input);
+    void run(hls::stream<pixel> &output, hls::stream<pixel> &input);
 } Game;
 
 #endif
