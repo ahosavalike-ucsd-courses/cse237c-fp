@@ -4,6 +4,7 @@
 
 typedef struct Game {
 	GfxEngine g;
+
 	void run(hls::stream<pixel> &output, hls::stream<pixel> &input);
 } Game;
 

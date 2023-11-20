@@ -7,20 +7,29 @@
 
 //typedef xf::cv::Mat<XFMT> xfcvmat;
 
-enum shape {
+enum Shape {
 	LINE,
 	RECTANGLE,
 	RECTANGLE_FILLED,
 };
 
+template <int SIZE>
+struct PointSize {
+	ap_uint<SIZE> x;
+	ap_uint<SIZE> y;
+	PointSize() {}
+	PointSize(int i, int j) : x(i), y(j) {}
+};
+
+typedef struct PointSize<11> Point;
+
 typedef struct GfxEngine {
-	ap_uint<11> x;
-	ap_uint<11> y;
+	Point c;
 	ap_uint<11> fc;
 	pixel p;
 	struct GfxEngine& read(hls::stream<pixel> &input);
 	struct GfxEngine& draw_diag();
-	struct GfxEngine& draw(shape s, rgb c, ap_uint<11> xi, ap_uint<11> yi, ap_uint<11> xj, ap_uint<11> yj);
+	struct GfxEngine& draw(Shape s, rgb c, Point i, Point j);
 	void write(hls::stream<pixel> &output);
 } GfxEngine;
 
