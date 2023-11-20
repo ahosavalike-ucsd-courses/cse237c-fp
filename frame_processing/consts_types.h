@@ -6,6 +6,10 @@
 
 #define FRAME_HEIGHT 720
 #define FRAME_WIDTH 1280
+#define SNAKE_LEN 100
+#define SNAKE_SIZE 10
+#define SNAKE_HEIGHT (FRAME_HEIGHT/SNAKE_SIZE)
+#define SNAKE_WIDTH (FRAME_WIDTH/SNAKE_SIZE)
 
 // struct rgb uses the internal ordering for rbg but accepts rgb.
 typedef struct rgb {

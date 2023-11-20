@@ -19,6 +19,21 @@ struct PointSize {
     ap_uint<SIZE> y;
     PointSize() {}
     PointSize(int i, int j) : x(i), y(j) {}
+    PointSize<SIZE> operator+ (PointSize<SIZE> o) {
+    	return PointSize<SIZE>(x+o.x, y+o.y);
+    }
+    PointSize<SIZE> operator+ (int o) {
+		return PointSize<SIZE>(x+o, y+o);
+	}
+    PointSize<SIZE> operator- (PointSize<SIZE> o) {
+		return PointSize<SIZE>(x-o.x, y-o.y);
+	}
+    PointSize<SIZE> operator- (int o) {
+		return PointSize<SIZE>(x-o, y-o);
+	}
+    bool operator== (PointSize<SIZE> o) {
+    	return x == o.x && y == o.y;
+    }
 };
 
 typedef struct PointSize<11> Point;
@@ -26,12 +41,11 @@ typedef struct PointSize<11> Point;
 typedef struct GfxEngine {
     // Current pixel location
     Point current_location;
-    // Current Frame Count
-    ap_uint<11> fc;
+    // Current Tick
+    ap_uint<11> tick;
     // Pixel value to send
     pixel p;
     struct GfxEngine &read(hls::stream<pixel> &input);
-    struct GfxEngine &draw_diag();
     struct GfxEngine &draw(Shape s, rgb color, Point i, Point j);
     void write(hls::stream<pixel> &output);
 } GfxEngine;

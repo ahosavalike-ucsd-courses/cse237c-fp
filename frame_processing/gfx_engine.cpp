@@ -4,21 +4,8 @@ struct GfxEngine &GfxEngine::read(hls::stream<pixel> &input) {
     input >> p;
     if (p.user) {
         current_location.x = current_location.y = 0;
-        fc++;  // Will overflow, only track till meaningful
-        if (fc > FRAME_HEIGHT)
-            fc = 1;
+        tick++;  // Will overflow, only track till meaningful
     }
-    return *this;
-}
-
-struct GfxEngine &GfxEngine::draw_diag() {
-    if (current_location.x == current_location.y)
-        if (current_location.x < fc)
-            p.data = 0x0000ff;
-        else if (current_location.x > fc)
-            p.data = 0xff0000;
-        else
-            p.data = 0xffffff;
     return *this;
 }
 

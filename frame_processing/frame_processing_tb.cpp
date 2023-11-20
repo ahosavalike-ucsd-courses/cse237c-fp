@@ -46,6 +46,7 @@ int main() {
     while (true) {
         for (int i = 0; i < FRAME_HEIGHT; i++) {
             for (int j = 0; j < FRAME_WIDTH; j++) {
+            	cv::waitKey(1);
                 inpix.user = i == 0 && j == 0;
                 inpix.last = j == FRAME_WIDTH - 1;
                 in << inpix;
