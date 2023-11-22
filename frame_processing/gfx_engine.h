@@ -13,42 +13,17 @@ enum Shape {
     RECTANGLE_FILLED,
 };
 
-template <int SIZE>
-struct PointSize {
-    ap_uint<SIZE> x;
-    ap_uint<SIZE> y;
-    PointSize() {}
-    PointSize(int i, int j) : x(i), y(j) {}
-    PointSize<SIZE> operator+ (PointSize<SIZE> o) {
-    	return PointSize<SIZE>(x+o.x, y+o.y);
-    }
-    PointSize<SIZE> operator+ (int o) {
-		return PointSize<SIZE>(x+o, y+o);
-	}
-    PointSize<SIZE> operator- (PointSize<SIZE> o) {
-		return PointSize<SIZE>(x-o.x, y-o.y);
-	}
-    PointSize<SIZE> operator- (int o) {
-		return PointSize<SIZE>(x-o, y-o);
-	}
-    bool operator== (PointSize<SIZE> o) {
-    	return x == o.x && y == o.y;
-    }
-};
-
-typedef struct PointSize<11> Point;
-
 typedef struct GfxEngine {
-    // Current pixel location
-    Point current_location;
-    // Current Tick
-    ap_uint<11> tick;
-    // Pixel value to send
-    pixel p;
-    struct GfxEngine &read(hls::stream<pixel> &input);
-    struct GfxEngine &draw(Shape s, rgb color, Point i, Point j);
-    struct GfxEngine &draw_num(ap_uint<4> n, rgb color, Point i);
-    void write(hls::stream<pixel> &output);
+	// Remember if prev pixel was last in that line
+	static ap_uint<1> last;
+	// Current pixel location
+	static Point loc;
+	// Current Tick
+	static ap_uint<11> tick;
+    static void read(hls::stream<pixel> &input, hls::stream<streaming_data> &output);
+    static void draw(Shape s, rgb color, Point i, Point j, hls::stream<streaming_data> &input, hls::stream<streaming_data> &output);
+    static void draw_num(ap_uint<4> n, rgb color, Point i, hls::stream<streaming_data> &input, hls::stream<streaming_data> &output);
+    static void write(hls::stream<streaming_data> &input, hls::stream<pixel> &output);
 } GfxEngine;
 
 #endif

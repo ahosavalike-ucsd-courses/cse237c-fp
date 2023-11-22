@@ -16,7 +16,7 @@ create_clock -period 10 -name default
 config_cosim -tool xsim
 config_export -format ip_catalog -rtl verilog -vivado_clock 10
 source "./frame_processing/solution1/directives.tcl"
-csim_design -ldflags {-LC:/Users/adyan/Projects/CSE237C/game/opencv/mingw_build/install/x64/mingw/lib -llibopencv_core440 -llibopencv_imgproc440 -llibopencv_highgui440}
+csim_design -ldflags {-LC:/Users/adyan/Projects/CSE237C/game/opencv/mingw_build/install/x64/mingw/lib -llibopencv_core440 -llibopencv_imgproc440 -llibopencv_highgui440} -O
 csynth_design
-cosim_design -ldflags {-LC:/Users/adyan/Projects/CSE237C/game/opencv/mingw_build/install/x64/mingw/lib -llibopencv_core440 -llibopencv_imgproc440 -llibopencv_highgui440}
+cosim_design -ldflags {-LC:/Users/adyan/Projects/CSE237C/game/opencv/mingw_build/install/x64/mingw/lib -llibopencv_core440 -llibopencv_imgproc440 -llibopencv_highgui440} -tool xsim
 export_design -rtl verilog -format ip_catalog

@@ -8,8 +8,8 @@
 #define FRAME_WIDTH 1280
 #define SNAKE_LEN 100
 #define SNAKE_SIZE 10
-#define SNAKE_HEIGHT (FRAME_HEIGHT/SNAKE_SIZE)
-#define SNAKE_WIDTH (FRAME_WIDTH/SNAKE_SIZE)
+#define SNAKE_HEIGHT (FRAME_HEIGHT / SNAKE_SIZE)
+#define SNAKE_WIDTH (FRAME_WIDTH / SNAKE_SIZE)
 
 // struct rgb uses the internal ordering for rbg but accepts rgb.
 typedef struct rgb {
@@ -57,5 +57,42 @@ typedef struct rgb {
         return bgr;
     }
 } rgb;
+
+template <int SIZE>
+struct PointSize {
+    ap_uint<SIZE> x;
+    ap_uint<SIZE> y;
+    PointSize() {}
+    PointSize(const PointSize<SIZE> &o) : x(o.x), y(o.y) {}
+    PointSize(int i, int j) : x(i), y(j) {}
+    PointSize<SIZE> operator+(PointSize<SIZE> o) {
+        return PointSize<SIZE>(x + o.x, y + o.y);
+    }
+    PointSize<SIZE> operator+(int o) {
+        return PointSize<SIZE>(x + o, y + o);
+    }
+    PointSize<SIZE> operator-(PointSize<SIZE> o) {
+        return PointSize<SIZE>(x - o.x, y - o.y);
+    }
+    PointSize<SIZE> operator-(int o) {
+        return PointSize<SIZE>(x - o, y - o);
+    }
+    bool operator==(PointSize<SIZE> o) {
+        return x == o.x && y == o.y;
+    }
+};
+
+typedef struct PointSize<11> Point;
+
+typedef struct streaming_data {
+	// Pixel
+    rgb color;
+    ap_uint<1> user, last;
+    // Current pixel location
+	Point loc;
+	// Current Tick
+	ap_uint<11> tick;
+} streaming_data;
+
 typedef hls::axis<rgb, 1, 1, 1> pixel;
 #endif

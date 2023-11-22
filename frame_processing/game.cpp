@@ -158,42 +158,52 @@ void Game::update(ap_int<2> move) {
     }
 }
 
-void Game::draw_head() {
-    g.draw(RECTANGLE_FILLED, 0xffffff, snake[0].p, snake[0].p + 10);
+void Game::draw_head(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output) {
+    g.draw(RECTANGLE_FILLED, 0xffffff, snake[0].p, snake[0].p + 10, input, output);
 }
 
-void Game::draw_body() {
-    for (ap_uint<7> i = 1; i < SNAKE_LEN; i++) {
-        g.draw(RECTANGLE, 0xf0f0f0, snake[i].p, snake[i].p + 10);
+void Game::draw_body(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output) {
+    static hls::stream<streaming_data> temps[SNAKE_LEN - 2];
+    g.draw(RECTANGLE, 0xf0f0f0, snake[1].p, snake[1].p + 10, input, temps[0]);
+    for (ap_uint<7> i = 2; i < SNAKE_LEN - 1; i++) {
+        g.draw(RECTANGLE, 0xf0f0f0, snake[i].p, snake[i].p + 10, temps[i - 2], temps[i - 1]);
     }
+    g.draw(RECTANGLE, 0xf0f0f0, snake[SNAKE_LEN - 1].p, snake[SNAKE_LEN - 1].p + 10, temps[SNAKE_LEN - 3], output);
 }
 
-void Game::draw_food() {
+void Game::draw_food(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output) {
     // Flash the food
     if (!g.tick.get_bit(2))
-        g.draw(RECTANGLE_FILLED, 0xff0000, food - 2, food + 2);
+        g.draw(RECTANGLE_FILLED, 0xff0000, food - 2, food + 2, input, output);
+    output.write(input.read());
 }
 
-void Game::draw() {
+void Game::draw(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output) {
+    static hls::stream<streaming_data> i("Game::draw.i"), j("Game::draw.j");
     if (done) {
         // Show score?
-        g.draw_num(score, 0x00ff00, Point(1200, 10));
+        g.draw_num(score, 0x00ff00, Point(1200, 10), input, output);
     } else {
-        draw_head();
+        draw_head(input, i);
         // Draw snake body
-        draw_body();
+        draw_body(i, j);
         // Draw food
-        draw_food();
+        draw_food(j, output);
     }
 }
 
-void Game::run(hls::stream<pixel> &output, hls::stream<pixel> &input) {
-    g.read(input);
+void Game::run(hls::stream<pixel> &input, hls::stream<pixel> &output) {
+    static hls::stream<streaming_data> i("Game::run.i"), j("Game::run.j"), k("Game::run.k");
+    g.read(input, i);
     // Check key press and change state
-    if (!done)
-        update(0);
-    if (g.tick.get_bit(5)) score++;
+    //    if (g.tick.get_bit(5) && !done)
+    //        update(0);
+    //    if (g.tick.get_bit(5))
+    //    	score++;
+    streaming_data c = i.read();
+    if (c.user == 1) score++;
     if (score >= 10) score = 0;
-    draw();
-    g.write(output);
+    j.write(c);
+    draw(j, k);
+    g.write(k, output);
 }

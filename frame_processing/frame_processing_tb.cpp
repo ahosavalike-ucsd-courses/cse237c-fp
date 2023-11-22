@@ -38,15 +38,15 @@ char showfb(fbtype fb[FRAME_HEIGHT][FRAME_WIDTH]) {
 
 int main() {
     auto fb = new fbtype[FRAME_HEIGHT][FRAME_WIDTH]();
-    hls::stream<pixel> in, out;
+    hls::stream<pixel> in("main.in"), out("main.out");
     pixel inpix, pix;
     inpix.data = 0x0;
     std::cout << "Starting Frame Gen:" << std::endl;
+    bool ok = false;
     // Fill fb
     while (true) {
         for (int i = 0; i < FRAME_HEIGHT; i++) {
             for (int j = 0; j < FRAME_WIDTH; j++) {
-            	cv::waitKey(1);
                 inpix.user = i == 0 && j == 0;
                 inpix.last = j == FRAME_WIDTH - 1;
                 in << inpix;
@@ -59,6 +59,7 @@ int main() {
         }
         //		printfb(fb);
         //		break;
+        ok = true;
         if (showfb(fb) == 'c') {
             break;
         }
