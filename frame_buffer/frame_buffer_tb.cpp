@@ -1,13 +1,24 @@
 #include "frame_buffer.h"
+#include <cassert>
 
 int main() {
 	hls::stream<pixel> in, out;
-	pixel p, q;
+	pixel p;
 	p.data = 0xffffff;
-	in << p;
+	in.write(p);
 	frame_buffer(in, out);
-	if (!out.read_nb(q)) {
-		return 1;
+	assert(out.read_nb(p));
+	assert(p.data == 0x000000);
+	p.data = 0xffffff;
+	for (int i = 0; i < SAMPLES; i++) {
+		in.write(p);
 	}
-	return q.data != 0x000000;
+	for (int i = 0; i < SAMPLES - 2; i++) {
+		frame_buffer(in, out);
+		out.read();
+	}
+	frame_buffer(in, out);
+	assert(out.read().data == 0x000000);
+	frame_buffer(in, out);
+	assert(out.read().data == 0xffffff);
 }

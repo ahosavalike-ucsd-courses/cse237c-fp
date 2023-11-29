@@ -2,14 +2,20 @@
 
 void frame_buffer(hls::stream<pixel> &in, hls::stream<pixel> &out) {
 #pragma HLS INTERFACE axis port=in,out
-	static pixel input[FRAME_HEIGHT * FRAME_WIDTH] = {};
-	static pixel main[FRAME_HEIGHT * FRAME_WIDTH] = {};
-	static pixel output[FRAME_HEIGHT * FRAME_WIDTH] = {};
+#ifdef __SYNTHESIS__
+	static pixel input[SAMPLES] = {};
+	static pixel main[SAMPLES] = {};
+	static pixel output[SAMPLES] = {};
+#else
+	static pixel *input = new pixel[SAMPLES]();
+	static pixel *main = new pixel[SAMPLES]();
+	static pixel *output = new pixel[SAMPLES]();
+#endif
 	static bool iv = false, mv = false, ov = true;
-	static ap_uint<11> ii, iim, imo, io;
+	static ap_uint<20> ii, iim, imo, io;
 	if (!iv && in.read_nb(input[ii])) {
 		ii++;
-		if (ii == FRAME_WIDTH * FRAME_HEIGHT) {
+		if (ii == SAMPLES) {
 			ii = 0;
 			iv = true;
 		}
@@ -17,7 +23,7 @@ void frame_buffer(hls::stream<pixel> &in, hls::stream<pixel> &out) {
 	if (!mv && iv) {
 		main[iim] = input[iim];
 		iim++;
-		if (iim == FRAME_WIDTH * FRAME_HEIGHT) {
+		if (iim == SAMPLES) {
 			iim = 0;
 			iv = false;
 			mv = true;
@@ -26,16 +32,17 @@ void frame_buffer(hls::stream<pixel> &in, hls::stream<pixel> &out) {
 	if (mv && !ov) {
 		output[imo] = main[imo];
 		imo++;
-		if (imo == FRAME_WIDTH * FRAME_HEIGHT) {
+		if (imo == SAMPLES) {
 			imo = 0;
 			iv = false;
 			mv = true;
 		}
 	}
-	if (ov) {
-		out.write(output[io]);
+	pixel p = ov ? output[io] : main[io];
+	if (ov || mv) {
+		out.write(p);
 		io++;
-		if (io == FRAME_WIDTH * FRAME_HEIGHT){
+		if (io == SAMPLES){
 			io = 0;
 			ov = false;
 		}
