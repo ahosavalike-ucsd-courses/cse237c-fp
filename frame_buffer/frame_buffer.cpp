@@ -1,15 +1,13 @@
 #include "frame_buffer.h"
 
 void frame_buffer(hls::stream<pixel> &in, hls::stream<pixel> &out) {
-#pragma HLS INTERFACE mode=axis register_mode=both port=in,out register
+#pragma HLS INTERFACE axis port=in,out
 	static pixel input[FRAME_HEIGHT * FRAME_WIDTH] = {};
 	static pixel main[FRAME_HEIGHT * FRAME_WIDTH] = {};
 	static pixel output[FRAME_HEIGHT * FRAME_WIDTH] = {};
 	static bool iv = false, mv = false, ov = true;
 	static ap_uint<11> ii, iim, imo, io;
-	pixel i, o;
-	if (!iv && in.read_nb(i)) {
-		input[ii] = i;
+	if (!iv && in.read_nb(input[ii])) {
 		ii++;
 		if (ii == FRAME_WIDTH * FRAME_HEIGHT) {
 			ii = 0;

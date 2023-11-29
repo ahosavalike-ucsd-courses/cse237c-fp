@@ -6,6 +6,6 @@
 #define FRAME_WIDTH 1280
 
 typedef ap_uint<24> rgb;
-typedef hls::axis<rgb,1,1,1> pixel;
+typedef hls::axis<rgb,1,0,0> pixel;
 
 void frame_gen(hls::stream<pixel> &out);

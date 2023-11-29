@@ -7,11 +7,13 @@
 open_project frame_buffer
 set_top frame_buffer
 add_files frame_buffer/frame_buffer.cpp
+add_files -tb frame_buffer/frame_buffer_tb.cpp
 open_solution "solution1" -flow_target vivado
-set_part {xc7z020clg400-1}
+set_part {xc7z020-clg400-1}
 create_clock -period 10 -name default
+config_export -format ip_catalog -rtl verilog
 source "./frame_buffer/solution1/directives.tcl"
-#csim_design
+csim_design
 csynth_design
-#cosim_design
+cosim_design
 export_design -rtl verilog -format ip_catalog

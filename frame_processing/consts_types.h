@@ -94,5 +94,5 @@ typedef struct streaming_data {
 	ap_uint<11> tick, score;
 } streaming_data;
 
-typedef hls::axis<rgb, 1, 1, 1> pixel;
+typedef hls::axis<rgb, 1, 0, 0> pixel;
 #endif
