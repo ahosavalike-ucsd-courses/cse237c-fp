@@ -163,7 +163,7 @@ void Game::draw_head(hls::stream<streaming_data> &input, hls::stream<streaming_d
 }
 
 void Game::draw_body(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output) {
-    static hls::stream<streaming_data> temps[SNAKE_LEN - 2];
+    hls::stream<streaming_data> temps[SNAKE_LEN - 2];
     g.draw(RECTANGLE, 0xf0f0f0, snake[1].p, snake[1].p + 10, input, temps[0]);
     for (ap_uint<7> i = 2; i < SNAKE_LEN - 1; i++) {
         g.draw(RECTANGLE, 0xf0f0f0, snake[i].p, snake[i].p + 10, temps[i - 2], temps[i - 1]);
@@ -178,12 +178,13 @@ void Game::draw_food(hls::stream<streaming_data> &input, hls::stream<streaming_d
     output.write(input.read());
 }
 
-void Game::draw(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output) {
-    static hls::stream<streaming_data> i("Game::draw.i"), j("Game::draw.j");
+void Game::draw(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output, ap_uint<11> score) {
     if (done) {
+    	hls::stream<streaming_data> i("Game::draw.i");
         // Show score?
         g.draw_num(score, 0x00ff00, Point(1200, 10), input, output);
     } else {
+    	hls::stream<streaming_data> i("Game::draw.i"), j("Game::draw.j");
         draw_head(input, i);
         // Draw snake body
         draw_body(i, j);
@@ -192,18 +193,23 @@ void Game::draw(hls::stream<streaming_data> &input, hls::stream<streaming_data> 
     }
 }
 
+ap_uint<11> Game::update_score(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output) {
+	streaming_data c = input.read();
+	if (c.user == 1) score++;
+	if (score >= 10) score = 0;
+	c.score = score;
+	output.write(c);
+	return score;
+}
+
 void Game::run(hls::stream<pixel> &input, hls::stream<pixel> &output) {
-    static hls::stream<streaming_data> i("Game::run.i"), j("Game::run.j"), k("Game::run.k");
+    hls::stream<streaming_data> i("Game::run.i"), j("Game::run.j"), k("Game::run.k");
     g.read(input, i);
     // Check key press and change state
     //    if (g.tick.get_bit(5) && !done)
     //        update(0);
     //    if (g.tick.get_bit(5))
     //    	score++;
-    streaming_data c = i.read();
-    if (c.user == 1) score++;
-    if (score >= 10) score = 0;
-    j.write(c);
-    draw(j, k);
+    draw(j, k, update_score(i, j));
     g.write(k, output);
 }

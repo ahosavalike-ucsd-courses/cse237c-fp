@@ -2,7 +2,7 @@
     <includePaths/>
     <libraryPaths/>
     <Simulation argv="">
-        <SimFlow name="csim" optimizeCompile="true" ldflags="-LC:/Users/adyan/Projects/CSE237C/game/opencv/mingw_build/install/x64/mingw/lib -llibopencv_core440 -llibopencv_imgproc440 -llibopencv_highgui440" mflags="" csimMode="0" lastCsimMode="2"/>
+        <SimFlow name="csim" optimizeCompile="true" ldflags="-LC:/Users/adyan/Projects/CSE237C/game/opencv/mingw_build/install/x64/mingw/lib -llibopencv_core440 -llibopencv_imgproc440 -llibopencv_highgui440" mflags="" csimMode="0" lastCsimMode="0"/>
     </Simulation>
     <files xmlns="">
         <file name="../../frame_processing_tb.cpp" sc="0" tb="1" cflags="-IC:/Users/adyan/Projects/CSE237C/game/opencv/mingw_build/install/include -Wno-unknown-pragmas" csimflags="" blackbox="false"/>

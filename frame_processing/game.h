@@ -29,10 +29,11 @@ typedef struct Game {
     }
     void reset();
     void update(ap_int<2> move);
-    void draw(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output);
+    void draw(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output, ap_uint<11> score);
     void draw_head(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output);
     void draw_body(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output);
     void draw_food(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output);
+    ap_uint<11> update_score(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output);
     void run(hls::stream<pixel> &input, hls::stream<pixel> &output);
 } Game;
 

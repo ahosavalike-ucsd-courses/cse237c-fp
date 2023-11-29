@@ -91,7 +91,7 @@ typedef struct streaming_data {
     // Current pixel location
 	Point loc;
 	// Current Tick
-	ap_uint<11> tick;
+	ap_uint<11> tick, score;
 } streaming_data;
 
 typedef hls::axis<rgb, 1, 1, 1> pixel;
