@@ -14,3 +14,8 @@
 !frame_processing/frame_processing/solution1/
 !frame_processing/frame_processing/solution1/script.tcl
 !frame_processing/frame_processing/solution1/directives.tcl
+!frame_buffer/
+!frame_buffer/hls.app
+!frame_buffer/solution1/
+!frame_buffer/solution1/script.tcl
+!frame_buffer/solution1/directives.tcl
