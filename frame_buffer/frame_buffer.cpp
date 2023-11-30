@@ -2,49 +2,41 @@
 
 void frame_buffer(hls::stream<pixel> &in, hls::stream<pixel> &out) {
 #pragma HLS INTERFACE axis port=in,out
-#ifdef __SYNTHESIS__
-	static pixel input[SAMPLES] = {};
-	static pixel main[SAMPLES] = {};
-	static pixel output[SAMPLES] = {};
-#else
-	static pixel *input = new pixel[SAMPLES]();
-	static pixel *main = new pixel[SAMPLES]();
-	static pixel *output = new pixel[SAMPLES]();
-#endif
-	static bool iv = false, mv = false, ov = true;
-	static ap_uint<20> ii, iim, imo, io;
-	if (!iv && in.read_nb(input[ii])) {
-		ii++;
-		if (ii == SAMPLES) {
-			ii = 0;
-			iv = true;
+#pragma HLS PIPELINE II=1
+	static pixel main[FRAME_WIDTH][FRAME_HEIGHT];
+	static ap_uint<11> ix, iy, ox, oy, ocx, ocy;
+	if (in.read_nb(main[ix][iy])) {
+		ix++;
+		if (ix == FRAME_WIDTH) {
+			ix = 0;
+			iy++;
+		}
+		if (iy == FRAME_HEIGHT) {
+			iy = 0;
 		}
 	}
-	if (!mv && iv) {
-		main[iim] = input[iim];
-		iim++;
-		if (iim == SAMPLES) {
-			iim = 0;
-			iv = false;
-			mv = true;
-		}
+	pixel p = main[ox][oy];
+	p.user = 0;
+	p.last = 0;
+	if (ocx == 0 && ocy == 0 && ox == 0 && oy == 0)
+		p.user = 1;
+	else if (ocx == SCALE - 1 && ox == FRAME_WIDTH - 1)
+		p.last = 1;
+	out.write(p);
+	ocx++;
+	if (ocx == SCALE) {
+		ocx = 0;
+		ox++;
 	}
-	if (mv && !ov) {
-		output[imo] = main[imo];
-		imo++;
-		if (imo == SAMPLES) {
-			imo = 0;
-			iv = false;
-			mv = true;
-		}
+	if (ox == FRAME_WIDTH) {
+		ox = 0;
+		ocy++;
 	}
-	pixel p = ov ? output[io] : main[io];
-	if (ov || mv) {
-		out.write(p);
-		io++;
-		if (io == SAMPLES){
-			io = 0;
-			ov = false;
-		}
+	if (ocy == SCALE) {
+		ocy = 0;
+		oy++;
+	}
+	if (oy == FRAME_HEIGHT) {
+		oy = 0;
 	}
 }

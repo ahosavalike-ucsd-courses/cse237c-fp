@@ -7,8 +7,9 @@ void frame_gen(hls::stream<pixel> &output) {
 	static ap_uint<20> pc;
 
 	pixel p;
-	p.last = p.user = p.data = 0x0;
-	p.keep = 0b111;
+	p.last = p.user = 0x0;
+	p.data = 0x000000;
+	p.keep = p.strb = 0b111;
 	if (pc == 0)
 		p.user = 1;
 	if (lc == FRAME_WIDTH - 1)

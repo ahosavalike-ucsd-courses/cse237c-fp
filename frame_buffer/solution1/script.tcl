@@ -7,7 +7,7 @@
 open_project frame_buffer
 set_top frame_buffer
 add_files frame_buffer/frame_buffer.cpp
-add_files -tb frame_buffer/frame_buffer_tb.cpp
+add_files -tb frame_buffer/frame_buffer_tb.cpp -cflags "-Wno-unknown-pragmas"
 open_solution "solution1" -flow_target vivado
 set_part {xc7z020-clg400-1}
 create_clock -period 10 -name default

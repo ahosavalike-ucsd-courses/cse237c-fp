@@ -4,10 +4,10 @@
 #include <ap_int.h>
 #include <hls_stream.h>
 
-#define FRAME_HEIGHT 720
-#define FRAME_WIDTH 1280
-#define SNAKE_LEN 100
-#define SNAKE_SIZE 10
+#define FRAME_HEIGHT 72
+#define FRAME_WIDTH 128
+#define SNAKE_LEN 10
+#define SNAKE_SIZE 1
 #define SNAKE_HEIGHT (FRAME_HEIGHT / SNAKE_SIZE)
 #define SNAKE_WIDTH (FRAME_WIDTH / SNAKE_SIZE)
 

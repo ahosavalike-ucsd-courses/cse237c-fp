@@ -2,9 +2,9 @@
 #include <ap_int.h>
 #include <hls_stream.h>
 
-#define FRAME_WIDTH 1280
-#define FRAME_HEIGHT 720
-#define SAMPLES (FRAME_HEIGHT * FRAME_WIDTH)
+#define FRAME_WIDTH 128
+#define FRAME_HEIGHT 72
+#define SCALE 10
 
 typedef hls::axis<ap_uint<24>, 1, 0, 0> pixel;
 

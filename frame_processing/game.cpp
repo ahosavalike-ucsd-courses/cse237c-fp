@@ -1,6 +1,17 @@
 #include "game.h"
 
 Point food_loc[SNAKE_LEN] = {
+    Point(14, 8),
+    Point(53, 58),
+    Point(23, 66),
+    Point(9, 63),
+    Point(8, 29),
+    Point(20, 62),
+    Point(69, 48),
+    Point(47, 21),
+    Point(29, 11),
+    Point(30, 61),
+/*
     Point(140, 80),
     Point(530, 580),
     Point(230, 660),
@@ -101,6 +112,7 @@ Point food_loc[SNAKE_LEN] = {
     Point(190, 680),
     Point(410, 200),
     Point(1000, 470),
+*/
 };
 
 void Game::reset() {
