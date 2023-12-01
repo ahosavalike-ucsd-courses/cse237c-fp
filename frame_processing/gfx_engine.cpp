@@ -2,7 +2,7 @@
 
 ap_uint<1> GfxEngine::last = 0;
 Point GfxEngine::loc = Point(0, 0);
-ap_uint<11> GfxEngine::tick = 0;
+ap_uint<FCB> GfxEngine::tick = 0;
 
 void GfxEngine::read(hls::stream<pixel> &input, hls::stream<streaming_data> &output) {
 	loc.x++;
@@ -37,8 +37,8 @@ void GfxEngine::draw(Shape s, rgb color, Point i, Point j, hls::stream<streaming
     output << p;
 }
 
-#define FONTX 10
-#define FONTY 16
+#define FONTX 2
+#define FONTY 3
 void GfxEngine::draw_num(ap_uint<4> n, rgb color, Point x, hls::stream<streaming_data> &input, hls::stream<streaming_data> &output) {
     if (n == 0) draw(RECTANGLE, color, x, x + Point(FONTX, FONTY), input, output);
     else if (n == 1) draw(LINE, color, x + Point(FONTX, 0), x + Point(FONTX, FONTY), input, output);

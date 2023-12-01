@@ -116,7 +116,10 @@ Point food_loc[SNAKE_LEN] = {
 };
 
 void Game::reset() {
+#pragma HLS PIPELINE
+	reset_snake:
     for (ap_uint<7> i = 0; i < SNAKE_LEN; i++)
+#pragma HLS UNROLL
         snake[i] = SnakePiece(Point(-1, -1), RIGHT);
     snake[0] = SnakePiece(Point(SNAKE_WIDTH * SNAKE_SIZE / 2, SNAKE_HEIGHT * SNAKE_SIZE / 2), RIGHT);
     score = 0;
@@ -161,6 +164,7 @@ void Game::update(ap_int<2> move) {
     }
     if (g.tick.get_bit(5)) {
         for (ap_uint<7> i = 1; i < SNAKE_LEN; i++) {
+#pragma HLS UNROLL
             if (i < score) {
                 snake[i] = snake[i - 1];
                 if (snake[i].p == snake[0].p)
@@ -177,6 +181,7 @@ void Game::draw_head(hls::stream<streaming_data> &input, hls::stream<streaming_d
 void Game::draw_body(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output) {
     hls::stream<streaming_data> temps[SNAKE_LEN - 2];
     g.draw(RECTANGLE, 0xf0f0f0, snake[1].p, snake[1].p + 10, input, temps[0]);
+    draw_body:
     for (ap_uint<7> i = 2; i < SNAKE_LEN - 1; i++) {
         g.draw(RECTANGLE, 0xf0f0f0, snake[i].p, snake[i].p + 10, temps[i - 2], temps[i - 1]);
     }
@@ -185,43 +190,43 @@ void Game::draw_body(hls::stream<streaming_data> &input, hls::stream<streaming_d
 
 void Game::draw_food(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output) {
     // Flash the food
-    if (!g.tick.get_bit(2))
+    if (g.tick == 0)
         g.draw(RECTANGLE_FILLED, 0xff0000, food - 2, food + 2, input, output);
-    output.write(input.read());
+    else
+    	output.write(input.read());
 }
 
 void Game::draw(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output, ap_uint<11> score) {
-    if (done) {
-    	hls::stream<streaming_data> i("Game::draw.i");
-        // Show score?
-        g.draw_num(score, 0x00ff00, Point(1200, 10), input, output);
-    } else {
-    	hls::stream<streaming_data> i("Game::draw.i"), j("Game::draw.j");
+    if (!done) {
+    	hls::stream<streaming_data> i("Game::draw.i"), j("Game::draw.j"), k("Game::draw.k");
         draw_head(input, i);
         // Draw snake body
         draw_body(i, j);
         // Draw food
-        draw_food(j, output);
+        draw_food(j, k);
+        // Show score
+		g.draw_num(score, 0x00ff00, Point(120, 1), k, output);
+    } else {
+    	// Show score
+		g.draw_num(score, 0x00ff00, Point(120, 1), input, output);
     }
 }
 
-ap_uint<11> Game::update_score(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output) {
+void Game::update_score(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output, ap_uint<11> &score) {
 	streaming_data c = input.read();
-	if (c.user == 1) score++;
-	if (score >= 10) score = 0;
-	c.score = score;
+	c.score = this->score;
+	score = this->score;
 	output.write(c);
-	return score;
 }
 
-void Game::run(hls::stream<pixel> &input, hls::stream<pixel> &output) {
+void Game::run(hls::stream<pixel> &input, hls::stream<pixel> &output, ap_int<2> move) {
     hls::stream<streaming_data> i("Game::run.i"), j("Game::run.j"), k("Game::run.k");
     g.read(input, i);
     // Check key press and change state
-    //    if (g.tick.get_bit(5) && !done)
-    //        update(0);
-    //    if (g.tick.get_bit(5))
-    //    	score++;
-    draw(j, k, update_score(i, j));
+	if (!done)
+		update(move);
+	ap_uint<11> score;
+	update_score(i, j, score);
+    draw(j, k, score);
     g.write(k, output);
 }

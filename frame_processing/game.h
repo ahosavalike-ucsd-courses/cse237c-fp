@@ -33,8 +33,8 @@ typedef struct Game {
     void draw_head(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output);
     void draw_body(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output);
     void draw_food(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output);
-    ap_uint<11> update_score(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output);
-    void run(hls::stream<pixel> &input, hls::stream<pixel> &output);
+    void update_score(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output, ap_uint<11> &score);
+    void run(hls::stream<pixel> &input, hls::stream<pixel> &output, ap_int<2> move);
 } Game;
 
 #endif

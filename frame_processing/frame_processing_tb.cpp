@@ -31,6 +31,7 @@ void printfb(fbtype fb[FRAME_HEIGHT][FRAME_WIDTH]) {
 char showfb(fbtype fb[FRAME_HEIGHT][FRAME_WIDTH]) {
     using namespace cv;
     Mat img(FRAME_HEIGHT, FRAME_WIDTH, CV_8UC3, (void*)fb);
+    resize(img, img, Size(), 10, 10);
     cvtColor(img, img, COLOR_RGB2BGR);
     imshow("Image", img);
     return waitKey(1);
@@ -43,6 +44,7 @@ int main() {
     inpix.data = 0x0;
     std::cout << "Starting Frame Gen:" << std::endl;
     bool ok = false;
+    ap_uint<1> o = 0;
     // Fill fb
     while (true) {
         for (int i = 0; i < FRAME_HEIGHT; i++) {
@@ -50,12 +52,12 @@ int main() {
                 inpix.user = i == 0 && j == 0;
                 inpix.last = j == FRAME_WIDTH - 1;
                 in << inpix;
-                frame_processing(out, in);
-                out >> pix;
-                fb[i][j] = pix.data.toRGB();
-                assert((pix.user == 0) != (i == 0 && j == 0));
-                assert((pix.last == 0) != (j == FRAME_WIDTH - 1));
-            }
+                frame_processing(out, in, o, o);
+				out >> pix;
+				fb[i][j] = pix.data.toRGB();
+				assert((pix.user == 0) != (i == 0 && j == 0));
+				assert((pix.last == 0) != (j == FRAME_WIDTH - 1));
+			}
         }
         //		printfb(fb);
         //		break;
