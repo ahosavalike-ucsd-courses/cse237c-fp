@@ -1,159 +1,98 @@
 #include "game.h"
 
-Point food_loc[SNAKE_LEN] = {
-    Point(14, 8),
-    Point(53, 58),
-    Point(23, 66),
-    Point(9, 63),
-    Point(8, 29),
-    Point(20, 62),
-    Point(69, 48),
-    Point(47, 21),
-    Point(29, 11),
-    Point(30, 61),
 /*
-    Point(140, 80),
-    Point(530, 580),
-    Point(230, 660),
-    Point(90, 630),
-    Point(80, 290),
-    Point(200, 620),
-    Point(690, 480),
-    Point(470, 210),
-    Point(290, 110),
-    Point(300, 610),
-    Point(920, 30),
-    Point(780, 690),
-    Point(560, 30),
-    Point(1270, 470),
-    Point(590, 370),
-    Point(40, 460),
-    Point(540, 180),
-    Point(460, 250),
-    Point(400, 70),
-    Point(600, 20),
-    Point(1240, 410),
-    Point(600, 200),
-    Point(300, 60),
-    Point(70, 400),
-    Point(670, 530),
-    Point(240, 170),
-    Point(390, 620),
-    Point(250, 590),
-    Point(230, 320),
-    Point(620, 440),
-    Point(390, 440),
-    Point(820, 310),
-    Point(980, 580),
-    Point(440, 380),
-    Point(710, 20),
-    Point(500, 710),
-    Point(1260, 90),
-    Point(50, 610),
-    Point(820, 680),
-    Point(720, 710),
-    Point(240, 440),
-    Point(950, 260),
-    Point(1150, 670),
-    Point(660, 660),
-    Point(570, 550),
-    Point(510, 570),
-    Point(760, 290),
-    Point(1270, 520),
-    Point(680, 90),
-    Point(90, 160),
-    Point(820, 440),
-    Point(490, 30),
-    Point(480, 410),
-    Point(390, 650),
-    Point(480, 380),
-    Point(940, 190),
-    Point(140, 20),
-    Point(180, 370),
-    Point(740, 240),
-    Point(450, 380),
-    Point(940, 640),
-    Point(550, 610),
-    Point(900, 100),
-    Point(110, 520),
-    Point(770, 230),
-    Point(650, 320),
-    Point(200, 220),
-    Point(790, 680),
-    Point(1220, 170),
-    Point(760, 630),
-    Point(180, 450),
-    Point(660, 370),
-    Point(40, 390),
-    Point(1140, 60),
-    Point(680, 150),
-    Point(160, 660),
-    Point(1040, 310),
-    Point(510, 230),
-    Point(880, 380),
-    Point(830, 510),
-    Point(240, 640),
-    Point(1050, 670),
-    Point(10, 280),
-    Point(110, 30),
-    Point(10, 340),
-    Point(770, 270),
-    Point(500, 550),
-    Point(340, 690),
-    Point(210, 510),
-    Point(180, 150),
-    Point(560, 210),
-    Point(680, 620),
-    Point(1080, 60),
-    Point(830, 350),
-    Point(930, 230),
-    Point(1110, 520),
-    Point(350, 10),
-    Point(190, 680),
-    Point(410, 200),
-    Point(1000, 470),
+```py
+from random import sample
+from itertools import product
+SNAKE_LEN = 10
+SNAKE_SIZE = 4
+FRAME_HEIGHT = 72
+FRAME_WIDTH = 128
+
+SNAKE_HEIGHT = int(FRAME_HEIGHT / SNAKE_SIZE)
+SNAKE_WIDTH = int(FRAME_WIDTH / SNAKE_SIZE)
+
+valid_food = [(i * SNAKE_SIZE + int(SNAKE_SIZE/2), j * SNAKE_SIZE + int(SNAKE_SIZE/2)) for (i, j) in product(range(SNAKE_WIDTH), range(SNAKE_HEIGHT))]
+for (i,j) in sample(valid_food, SNAKE_LEN):
+    print(f"Point({i}, {j}),")
+```
 */
+Point food_loc[SNAKE_LEN] = {
+    Point(114, 50),
+    Point(90, 58),
+    Point(10, 58),
+    Point(62, 34),
+    Point(54, 30),
+    Point(102, 26),
+    Point(126, 14),
+    Point(102, 50),
+    Point(110, 46),
+    Point(46, 66),
 };
 
 void Game::reset() {
 #pragma HLS PIPELINE
-	reset_snake:
+reset_snake:
     for (ap_uint<7> i = 0; i < SNAKE_LEN; i++)
 #pragma HLS UNROLL
         snake[i] = SnakePiece(Point(-1, -1), RIGHT);
-    snake[0] = SnakePiece(Point(SNAKE_WIDTH * SNAKE_SIZE / 2, SNAKE_HEIGHT * SNAKE_SIZE / 2), RIGHT);
+    snake[0] = SnakePiece(Point(0, 0), RIGHT);
     score = 0;
     food = food_loc[0];
     done = false;
 }
 
 void Game::update(ap_int<2> move) {
-    // 5th bit, 16th frame, ~0.5s @30fps
+    static bool updated = false;
+    SnakePiece new_head = snake[0];
     // Move can be -1, 0, 1 for turn counter clockwise, no change, turn clockwise
-    snake[0].d += move;
-    switch (snake[0].d) {
+    new_head.d += move;
+
+    if (!g.tick) {
+        updated = false;
+        snake[0] = new_head;
+        return;
+    } else {
+        if (updated) {
+            snake[0] = new_head;
+            return;
+        }
+        updated = true;
+    }
+
+    switch (new_head.d) {
         case LEFT:
-            snake[0].p.x -= SNAKE_SIZE;
-            if (snake[0].p.x < 0)
-                snake[0].p.x = SNAKE_WIDTH * SNAKE_SIZE - SNAKE_SIZE;
+            new_head.p.x -= SNAKE_SIZE;
+            if (new_head.p.x >= FRAME_WIDTH)
+                new_head.p.x = FRAME_WIDTH - SNAKE_SIZE;
             break;
         case RIGHT:
-            snake[0].p.x += SNAKE_SIZE;
-            if (snake[0].p.x >= SNAKE_WIDTH)
-                snake[0].p.x = 0;
+            new_head.p.x += SNAKE_SIZE;
+            if (new_head.p.x >= FRAME_WIDTH - SNAKE_SIZE)
+                new_head.p.x = 0;
             break;
         case UP:
-            snake[0].p.y -= SNAKE_SIZE;
-            if (snake[0].p.y < 0)
-                snake[0].p.y = SNAKE_HEIGHT * SNAKE_SIZE - SNAKE_SIZE;
+            new_head.p.y -= SNAKE_SIZE;
+            if (new_head.p.y >= FRAME_HEIGHT)
+                new_head.p.y = FRAME_HEIGHT - SNAKE_SIZE;
             break;
         case DOWN:
-            snake[0].p.y += SNAKE_SIZE;
-            if (snake[0].p.y >= 0)
-                snake[0].p.y = 0;
+            new_head.p.y += SNAKE_SIZE;
+            if (new_head.p.y >= FRAME_HEIGHT - SNAKE_SIZE)
+                new_head.p.y = 0;
             break;
     }
-    if (snake[0].p.x <= food.x && snake[0].p.x + SNAKE_SIZE > food.x && snake[0].p.y <= food.y && snake[0].p.y + SNAKE_SIZE > food.y) {
+
+    for (ap_uint<7> i = SNAKE_LEN - 1; i >= 1; i--) {
+#pragma HLS UNROLL
+        if (score >= i) {
+            snake[i] = snake[i - 1];
+            if (snake[i].p == new_head.p)
+                done = true;
+        }
+    }
+
+    if (new_head.p.x <= food.x && new_head.p.x + SNAKE_SIZE > food.x && new_head.p.y <= food.y && new_head.p.y + SNAKE_SIZE > food.y) {
         score++;
         if (score == SNAKE_LEN) {
             done = true;
@@ -162,71 +101,56 @@ void Game::update(ap_int<2> move) {
             food = food_loc[score];
         }
     }
-    if (g.tick.get_bit(5)) {
-        for (ap_uint<7> i = 1; i < SNAKE_LEN; i++) {
-#pragma HLS UNROLL
-            if (i < score) {
-                snake[i] = snake[i - 1];
-                if (snake[i].p == snake[0].p)
-                    done = true;
-            }
-        }
-    }
+    snake[0] = new_head;
+    dbg("Snake[0]: %d,%d %d\n", snake[0].p.x, snake[0].p.y, snake[0].d);
 }
 
-void Game::draw_head(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output) {
-    g.draw(RECTANGLE_FILLED, 0xffffff, snake[0].p, snake[0].p + 10, input, output);
-}
-
-void Game::draw_body(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output) {
-    hls::stream<streaming_data> temps[SNAKE_LEN - 2];
-    g.draw(RECTANGLE, 0xf0f0f0, snake[1].p, snake[1].p + 10, input, temps[0]);
-    draw_body:
-    for (ap_uint<7> i = 2; i < SNAKE_LEN - 1; i++) {
-        g.draw(RECTANGLE, 0xf0f0f0, snake[i].p, snake[i].p + 10, temps[i - 2], temps[i - 1]);
+void Game::draw_snake(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output) {
+    hls::stream<streaming_data> temps[SNAKE_LEN - 1];
+    g.draw(RECTANGLE_FILLED, 0xf0f0f0, snake[0].p, snake[0].p + SNAKE_SIZE, input, temps[0]);
+draw_snake:
+    for (ap_uint<7> i = 1; i < SNAKE_LEN - 1; i++) {
+        g.draw(RECTANGLE, 0xf0f0f0, snake[i].p, snake[i].p + SNAKE_SIZE, temps[i - 1], temps[i]);
     }
-    g.draw(RECTANGLE, 0xf0f0f0, snake[SNAKE_LEN - 1].p, snake[SNAKE_LEN - 1].p + 10, temps[SNAKE_LEN - 3], output);
+    g.draw(RECTANGLE, 0xf0f0f0, snake[SNAKE_LEN - 1].p, snake[SNAKE_LEN - 1].p + SNAKE_SIZE, temps[SNAKE_LEN - 2], output);
 }
 
 void Game::draw_food(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output) {
     // Flash the food
-    if (g.tick == 0)
-        g.draw(RECTANGLE_FILLED, 0xff0000, food - 2, food + 2, input, output);
+    if (g.tick.get_bit(FCB - 2))
+        output.write(input.read());
     else
-    	output.write(input.read());
+        g.draw(RECTANGLE_FILLED, 0xff0000, food, food, input, output);
 }
 
 void Game::draw(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output, ap_uint<11> score) {
     if (!done) {
-    	hls::stream<streaming_data> i("Game::draw.i"), j("Game::draw.j"), k("Game::draw.k");
-        draw_head(input, i);
-        // Draw snake body
-        draw_body(i, j);
+        hls::stream<streaming_data> i("Game::draw.i"), j("Game::draw.j");
+        // Draw Snake
+        draw_snake(input, i);
         // Draw food
-        draw_food(j, k);
+        draw_food(i, j);
         // Show score
-		g.draw_num(score, 0x00ff00, Point(120, 1), k, output);
+        g.draw_num(score, 0x00ff00, Point(FRAME_WIDTH * 90 / 100, FRAME_HEIGHT * 2 / 100), j, output);
     } else {
-    	// Show score
-		g.draw_num(score, 0x00ff00, Point(120, 1), input, output);
+        // Show score
+        g.draw_num(score, 0xff0000, Point(FRAME_WIDTH / 2 - FONTX / 2, FRAME_HEIGHT / 2 - FONTY / 2), input, output);
     }
 }
 
-void Game::update_score(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output, ap_uint<11> &score) {
-	streaming_data c = input.read();
-	c.score = this->score;
-	score = this->score;
-	output.write(c);
-}
+// void Game::update_score(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output, ap_uint<11> &score) {
+//	streaming_data c = input.read();
+//	c.score = this->score;
+//	score = this->score;
+//	output.write(c);
+// }
 
 void Game::run(hls::stream<pixel> &input, hls::stream<pixel> &output, ap_int<2> move) {
     hls::stream<streaming_data> i("Game::run.i"), j("Game::run.j"), k("Game::run.k");
-    g.read(input, i);
+    g.read(input, j);
     // Check key press and change state
-	if (!done)
-		update(move);
-	ap_uint<11> score;
-	update_score(i, j, score);
+    if (!done)
+        update(move);
     draw(j, k, score);
     g.write(k, output);
 }

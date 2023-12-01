@@ -14,12 +14,12 @@ enum Shape {
 };
 
 typedef struct GfxEngine {
-	// Remember if prev pixel was last in that line
-	static ap_uint<1> last;
-	// Current pixel location
-	static Point loc;
-	// Current Tick
-	static ap_uint<FCB> tick;
+    // Remember if prev pixel was last in that line
+    static ap_uint<1> last;
+    // Current pixel location
+    static Point loc;
+    // Current Tick
+    static ap_uint<FCB> tick;
     static void read(hls::stream<pixel> &input, hls::stream<streaming_data> &output);
     static void draw(Shape s, rgb color, Point i, Point j, hls::stream<streaming_data> &input, hls::stream<streaming_data> &output);
     static void draw_num(ap_uint<4> n, rgb color, Point i, hls::stream<streaming_data> &input, hls::stream<streaming_data> &output);

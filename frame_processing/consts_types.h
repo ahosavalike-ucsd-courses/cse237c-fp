@@ -6,12 +6,21 @@
 
 #define FRAME_HEIGHT 72
 #define FRAME_WIDTH 128
-#define FC 7
-#define FCB 3
+#define FC 3
+#define FCB 2
 #define SNAKE_LEN 10
 #define SNAKE_SIZE 4
 #define SNAKE_HEIGHT (FRAME_HEIGHT / SNAKE_SIZE)
 #define SNAKE_WIDTH (FRAME_WIDTH / SNAKE_SIZE)
+#define FONTX 2
+#define FONTY 4
+
+#ifndef __SYNTHESIS__
+#include <stdio.h>
+#define dbg(...) printf(__VA_ARGS__)
+#else
+#define dbg(...)
+#endif
 
 // struct rgb uses the internal ordering for rbg but accepts rgb.
 typedef struct rgb {
@@ -87,13 +96,13 @@ struct PointSize {
 typedef struct PointSize<11> Point;
 
 typedef struct streaming_data {
-	// Pixel
+    // Pixel
     rgb color;
     ap_uint<1> user, last;
     // Current pixel location
-	Point loc;
-	// Current Tick
-	ap_uint<11> tick, score;
+    Point loc;
+    // Current Tick
+    ap_uint<11> tick, score;
 } streaming_data;
 
 typedef hls::axis<rgb, 1, 0, 0> pixel;

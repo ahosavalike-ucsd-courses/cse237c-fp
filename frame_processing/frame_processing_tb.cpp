@@ -56,17 +56,17 @@ int main() {
                 b1 = b == 'd';
                 b2 = b == 'a';
                 frame_processing(out, in, b1, b2);
-				out >> pix;
-				fb[i][j] = pix.data.toRGB();
-				assert((pix.user == 0) != (i == 0 && j == 0));
-				assert((pix.last == 0) != (j == FRAME_WIDTH - 1));
-			}
+                out >> pix;
+                fb[i][j] = pix.data.toRGB();
+                assert((pix.user == 0) != (i == 0 && j == 0));
+                assert((pix.last == 0) != (j == FRAME_WIDTH - 1));
+            }
         }
         //		printfb(fb);
         //		break;
         ok = true;
         b = showfb(fb);
-        if (b == 'c') {
+        if (b == 'q') {
             break;
         }
     }
