@@ -38,7 +38,7 @@ void GfxEngine::draw(Shape s, rgb color, Point i, Point j, hls::stream<streaming
 }
 
 #define FONTX 2
-#define FONTY 3
+#define FONTY 4
 void GfxEngine::draw_num(ap_uint<4> n, rgb color, Point x, hls::stream<streaming_data> &input, hls::stream<streaming_data> &output) {
     if (n == 0) draw(RECTANGLE, color, x, x + Point(FONTX, FONTY), input, output);
     else if (n == 1) draw(LINE, color, x + Point(FONTX, 0), x + Point(FONTX, FONTY), input, output);
