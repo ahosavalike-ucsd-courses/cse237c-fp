@@ -1,6 +1,8 @@
 #include "frame_buffer.h"
 #include <cassert>
 
+#define SAMPLES (128*72)
+
 int main() {
 	hls::stream<pixel> in, out;
 	pixel p;

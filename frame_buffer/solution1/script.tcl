@@ -13,7 +13,7 @@ set_part {xc7z020-clg400-1}
 create_clock -period 10 -name default
 config_export -format ip_catalog -rtl verilog
 source "./frame_buffer/solution1/directives.tcl"
-csim_design
+csim_design -O
 csynth_design
 cosim_design
 export_design -rtl verilog -format ip_catalog
