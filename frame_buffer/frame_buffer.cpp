@@ -6,43 +6,46 @@ void frame_buffer(hls::stream<pixel> &in, hls::stream<pixel> &out) {
 	static pixel main[FRAME_WIDTH][FRAME_HEIGHT];
 	static ap_uint<11> ix, iy, ox, oy, ocx, ocy;
 	static bool waitForOutput = false;
-	if (!waitForOutput && in.read_nb(main[ix][iy])) {
-		ix++;
-		if (ix == FRAME_WIDTH) {
+
+	// Input
+	const ap_uint<11> tix = ix, tiy = iy;
+	if (!waitForOutput && in.read_nb(main[tix][tiy])) {
+		if (tix == FRAME_WIDTH - 1) {
 			ix = 0;
-			iy++;
+			if (tiy == FRAME_HEIGHT - 1) iy = 0;
+			else iy = tiy + 1;
 		}
-		if (iy == FRAME_HEIGHT) {
-			iy = 0;
-		}
-		if (ix == iy && ix == 0)
-			waitForOutput = true;
+		else ix = tix + 1;
 	}
 
+	// Output
 	pixel p = main[ox][oy];
 	p.user = 0;
 	p.last = 0;
-	if (ocx == 0 && ocy == 0 && ox == 0 && oy == 0)
+	const ap_uint<11> tocx = ocx, tocy = ocy, tox = ox, toy = oy;
+	const bool ocxend = tocx == SCALE-1;
+	const bool ocyend = tocy == SCALE-1;
+	const bool oxend = tox == FRAME_WIDTH-1;
+	const bool oyend = toy == FRAME_HEIGHT-1;
+	if (tocx == 0 && tocy == 0 && tox == 0 && toy == 0)
 		p.user = 1;
-	else if (ocx == SCALE - 1 && ox == FRAME_WIDTH - 1)
+	else if (ocxend && oxend)
 		p.last = 1;
 	out.write(p);
-	ocx++;
-	if (ocx == SCALE) {
+	if (ocxend) {
 		ocx = 0;
-		ox++;
+		if (oxend) ox = 0;
+		else ox = tox + 1;
+	} else {
+		ocx = tocx + 1;
 	}
-	if (ox == FRAME_WIDTH) {
-		ox = 0;
-		ocy++;
+	if (oxend) {
+		if (ocyend) {
+			ocy = 0;
+			if (oyend) oy = 0;
+			else oy = toy + 1;
+		}
+		else ocy = tocy + 1;
 	}
-	if (ocy == SCALE) {
-		ocy = 0;
-		oy++;
-	}
-	if (oy == FRAME_HEIGHT) {
-		oy = 0;
-	}
-	if (ox == oy && ox == 0)
-		waitForOutput = false;
+	if (ocxend && ocyend && oxend && oyend) waitForOutput = true;
 }

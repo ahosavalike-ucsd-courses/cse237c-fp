@@ -2,7 +2,7 @@
     <includePaths/>
     <libraryPaths/>
     <Simulation>
-        <SimFlow name="csim" optimizeCompile="true" csimMode="0" lastCsimMode="2"/>
+        <SimFlow name="csim" optimizeCompile="true" csimMode="0" lastCsimMode="0"/>
     </Simulation>
     <files xmlns="">
         <file name="frame_buffer/frame_buffer.cpp" sc="0" tb="false" cflags="" csimflags="" blackbox="false"/>
