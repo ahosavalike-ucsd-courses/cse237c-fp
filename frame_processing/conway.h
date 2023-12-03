@@ -14,7 +14,7 @@ typedef struct ConwayGame {
         reset();
     }
     void reset();
-    void update(ap_int<2> move);
+    void update(ap_uint<2> move);
     void draw_world(hls::stream<streaming_data> &input, hls::stream<streaming_data> &output);
     void run(hls::stream<pixel> &input, hls::stream<pixel> &output, ap_uint<2> move);
 } ConwayGame;
