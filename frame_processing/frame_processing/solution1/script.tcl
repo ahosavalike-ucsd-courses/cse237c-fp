@@ -8,6 +8,8 @@ open_project frame_processing
 set_top frame_processing
 add_files frame_processing.cpp -cflags "-IC:/Users/adyan/.Xilinx/vitis_hls/2023.1/vitis_libraries/Vitis_Libraries/vision/L1/include -IC:/Users/adyan/Projects/CSE237C/game/opencv/mingw_build/install/include"
 add_files game.cpp
+add_files conway.cpp
+add_files tetris.cpp
 add_files gfx_engine.cpp
 add_files -tb frame_processing_tb.cpp -cflags "-IC:/Users/adyan/Projects/CSE237C/game/opencv/mingw_build/install/include -Wno-unknown-pragmas"
 open_solution "solution1" -flow_target vivado

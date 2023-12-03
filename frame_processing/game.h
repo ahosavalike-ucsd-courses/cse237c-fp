@@ -7,6 +7,11 @@
 #define LEFT 2
 #define UP 3
 
+#define SNAKE_LEN 10
+#define SNAKE_SIZE 4
+#define SNAKE_HEIGHT (FRAME_HEIGHT / SNAKE_SIZE)
+#define SNAKE_WIDTH (FRAME_WIDTH / SNAKE_SIZE)
+
 typedef ap_uint<2> Direction;
 
 typedef struct SnakePiece {

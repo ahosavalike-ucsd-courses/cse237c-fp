@@ -8,10 +8,6 @@
 #define FRAME_WIDTH 128
 #define FC 31
 #define FCB 5
-#define SNAKE_LEN 10
-#define SNAKE_SIZE 4
-#define SNAKE_HEIGHT (FRAME_HEIGHT / SNAKE_SIZE)
-#define SNAKE_WIDTH (FRAME_WIDTH / SNAKE_SIZE)
 #define FONTX 2
 #define FONTY 4
 
