@@ -68,7 +68,7 @@ void Game::update(ap_int<2> move) {
             break;
         case RIGHT:
             new_head.p.x += SNAKE_SIZE;
-            if (new_head.p.x >= FRAME_WIDTH - SNAKE_SIZE)
+            if (new_head.p.x == FRAME_WIDTH)
                 new_head.p.x = 0;
             break;
         case UP:
@@ -78,7 +78,7 @@ void Game::update(ap_int<2> move) {
             break;
         case DOWN:
             new_head.p.y += SNAKE_SIZE;
-            if (new_head.p.y >= FRAME_HEIGHT - SNAKE_SIZE)
+            if (new_head.p.y == FRAME_HEIGHT)
                 new_head.p.y = 0;
             break;
     }
