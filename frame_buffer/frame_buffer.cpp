@@ -5,14 +5,17 @@ void frame_buffer(hls::stream<pixel> &in, hls::stream<pixel> &out) {
 #pragma HLS PIPELINE II=1
 	static pixel main[FRAME_WIDTH][FRAME_HEIGHT];
 	static ap_uint<11> ix, iy, ox, oy, ocx, ocy;
-	static bool waitForOutput = false;
+	static bool outputDone = true;
 
 	// Input
 	const ap_uint<11> tix = ix, tiy = iy;
-	if (!waitForOutput && in.read_nb(main[tix][tiy])) {
+	if (outputDone && in.read_nb(main[tix][tiy])) {
 		if (tix == FRAME_WIDTH - 1) {
 			ix = 0;
-			if (tiy == FRAME_HEIGHT - 1) iy = 0;
+			if (tiy == FRAME_HEIGHT - 1) {
+				iy = 0;
+//				outputDone = false;
+			}
 			else iy = tiy + 1;
 		}
 		else ix = tix + 1;
@@ -39,7 +42,7 @@ void frame_buffer(hls::stream<pixel> &in, hls::stream<pixel> &out) {
 	} else {
 		ocx = tocx + 1;
 	}
-	if (oxend) {
+	if (oxend && ocxend) {
 		if (ocyend) {
 			ocy = 0;
 			if (oyend) oy = 0;
@@ -47,5 +50,5 @@ void frame_buffer(hls::stream<pixel> &in, hls::stream<pixel> &out) {
 		}
 		else ocy = tocy + 1;
 	}
-	if (ocxend && ocyend && oxend && oyend) waitForOutput = true;
+	if (ocxend && ocyend && oxend && oyend) outputDone = true;
 }
