@@ -11,6 +11,7 @@ enum Shape {
     LINE,
     RECTANGLE,
     RECTANGLE_FILLED,
+    POINT,
 };
 
 typedef struct GfxEngine {

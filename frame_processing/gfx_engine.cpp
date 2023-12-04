@@ -32,6 +32,10 @@ void GfxEngine::draw(Shape s, rgb color, Point i, Point j, hls::stream<streaming
     } else if (s == RECTANGLE_FILLED) {
         if (p.loc.x >= i.x && p.loc.x <= j.x && p.loc.y >= i.y && p.loc.y <= j.y)
             p.color = color;
+    } else if (s == POINT) {
+        if (p.loc == i) {
+            p.color = color;
+        }
     }
     output << p;
 }
