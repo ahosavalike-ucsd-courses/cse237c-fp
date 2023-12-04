@@ -3,6 +3,12 @@
 
 #include "gfx_engine.h"
 
+#define CONWAY_FACTOR 8
+#define CONWAY_FRAME_WIDTH (FRAME_WIDTH / CONWAY_FACTOR)
+#define CONWAY_FRAME_HEIGHT (FRAME_HEIGHT / CONWAY_FACTOR)
+#define CONWAY_BIT_WIDTH (7 - 3)
+#define RANDOM_BIT 6
+
 typedef struct ConwayPixel {
     ap_uint<1> live;
     ap_uint<1> chaos;
@@ -10,9 +16,9 @@ typedef struct ConwayPixel {
 
 typedef struct ConwayGame {
     GfxEngine g;
-    ap_uint<64> random_reg;
-    ap_uint<6> random_reg_index;
-    ConwayPixel world[FRAME_WIDTH][FRAME_HEIGHT];  // 16 * 16
+    ap_uint<1 << RANDOM_BIT> random_reg;
+    ap_uint<RANDOM_BIT> random_reg_index;
+    ConwayPixel world[CONWAY_FRAME_WIDTH][CONWAY_FRAME_HEIGHT];  // 16 * 16
     bool done;
     ConwayGame() {
         reset();

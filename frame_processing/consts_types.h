@@ -78,6 +78,9 @@ struct PointSize {
     PointSize<SIZE> operator+(int o) {
         return PointSize<SIZE>(x + o, y + o);
     }
+    PointSize<SIZE> operator*(int o) {
+        return PointSize<SIZE>(x * o, y * o);
+    }
     PointSize<SIZE> operator-(PointSize<SIZE> o) {
         return PointSize<SIZE>(x - o.x, y - o.y);
     }
