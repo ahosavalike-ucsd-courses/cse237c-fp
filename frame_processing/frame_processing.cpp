@@ -25,7 +25,7 @@ void debounce(bool &move_cw, bool &move_ccw, bool &game_select) {
 
 void frame_processing(hls::stream<pixel> &output, hls::stream<pixel> &input, bool move_cw, bool move_ccw, bool game_select) {
 #pragma HLS INTERFACE axis port = output, input
-#pragma HLS PIPELINE
+    // #pragma HLS PIPELINE
     static Game g;
     static ConwayGame cg;
     // static TetrisGame tg;
