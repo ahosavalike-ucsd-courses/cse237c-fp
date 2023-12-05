@@ -28,14 +28,14 @@ void frame_processing(hls::stream<pixel> &output, hls::stream<pixel> &input, boo
     // #pragma HLS PIPELINE
     static Game g;
     static ConwayGame cg;
-    // static TetrisGame tg;
+    static TetrisGame tg;
     static GameSelect select = CONWAY;
     debounce(move_cw, move_ccw, game_select);
     if (game_select) {
         select++;
         g.reset();
         cg.reset();
-        // tg.reset();
+        tg.reset();
     }
     switch (select) {
         case SNAKE:
@@ -46,7 +46,7 @@ void frame_processing(hls::stream<pixel> &output, hls::stream<pixel> &input, boo
             cg.run(input, output, move_ccw << 1 | move_cw);
             break;
         case TETRIS:
-            // tg.run(input, output, (move_ccw << 1) | move_cw | move_ccw);
+            tg.run(input, output, move_ccw << 1 | move_cw);
             break;
     }
 }

@@ -6,8 +6,8 @@
 
 #define FRAME_HEIGHT 72
 #define FRAME_WIDTH 128
-#define FC 31
-#define FCB 5
+#define FC 63
+#define FCB 6
 #define FONTX 2
 #define FONTY 4
 

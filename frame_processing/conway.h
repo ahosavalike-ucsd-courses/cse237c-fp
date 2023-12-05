@@ -4,9 +4,10 @@
 #include "gfx_engine.h"
 
 #define CONWAY_FACTOR 8
+#define CONWAY_FACTOR_WIDTH 3
 #define CONWAY_FRAME_WIDTH (FRAME_WIDTH / CONWAY_FACTOR)
 #define CONWAY_FRAME_HEIGHT (FRAME_HEIGHT / CONWAY_FACTOR)
-#define CONWAY_BIT_WIDTH (7 - 3)
+#define CONWAY_BIT_WIDTH (7 - CONWAY_FACTOR_WIDTH)
 #define RANDOM_BIT 6
 
 typedef struct ConwayPixel {
