@@ -76,7 +76,7 @@ void ConwayGame::update(ap_uint<2> move) {
         for (ap_uint<CONWAY_BIT_WIDTH> j = 0; j < CONWAY_FRAME_HEIGHT; j++) {
 #pragma HLS UNROLL
             world[i][j].chaos = 0;
-            world[i][j].live = (neighbors[i][j] + (world[i][j].live & 1)) == 3 || ((neighbors[i][j] == 3) && (world[i][j].live & 1));
+            world[i][j].live = (neighbors[i][j] - (world[i][j].live & 1)) == 3 || ((neighbors[i][j] == 3) && (world[i][j].live & 1));
         }
     }
     // Apply rules, clear chaos bit
