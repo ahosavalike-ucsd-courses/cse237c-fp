@@ -332,11 +332,11 @@ void TetrisGame::draw_world(hls::stream<streaming_data> &input, hls::stream<stre
     output << in;
 }
 
-void TetrisGame::run(hls::stream<pixel> &input, hls::stream<pixel> &output, ap_uint<2> move) {
+void TetrisGame::run(hls::stream<pixel> &input, hls::stream<pixel> &output, ap_uint<2> move, bool rotate) {
     // #pragma HLS ARRAY_PARTITION type = complete variable = world
     static hls::stream<streaming_data> i("TetrisGame::run.i"), j("TetrisGame::run.j"), k("TetrisGame::run.k");
     g.read(input, i);
-    update(move.get_bit(0), move.get_bit(1));
+    update(move, rotate);
     streaming_data c = i.read();
     j.write(c);
     draw_world(j, k);

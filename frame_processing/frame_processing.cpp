@@ -1,8 +1,9 @@
 #include "frame_processing.h"
 
-void debounce(bool &move_cw, bool &move_ccw, bool &game_select) {
+void debounce(bool &move_cw, bool &move_ccw, bool &rotate, bool &game_select) {
     static bool cw_pressed = 0;
     static bool ccw_pressed = 0;
+    static bool rotate_pressed = 0;
     static bool game_selected = 0;
     if (!move_cw && cw_pressed) cw_pressed = 0;
     if (move_cw && !cw_pressed)
@@ -16,6 +17,12 @@ void debounce(bool &move_cw, bool &move_ccw, bool &game_select) {
     else
         move_ccw = 0;
 
+    if (!rotate && rotate_pressed) rotate_pressed = 0;
+    if (rotate && !rotate_pressed)
+        rotate_pressed = 1;
+    else
+        rotate = 0;
+
     if (!game_select && game_selected) game_selected = 0;
     if (game_select && !game_selected)
         game_selected = 1;
@@ -23,14 +30,14 @@ void debounce(bool &move_cw, bool &move_ccw, bool &game_select) {
         game_select = 0;
 }
 
-void frame_processing(hls::stream<pixel> &output, hls::stream<pixel> &input, bool move_cw, bool move_ccw, bool game_select) {
+void frame_processing(hls::stream<pixel> &output, hls::stream<pixel> &input, bool move_cw, bool move_ccw, bool rotate, bool game_select) {
 #pragma HLS INTERFACE axis port = output, input
     // #pragma HLS PIPELINE
     static Game g;
     static ConwayGame cg;
     static TetrisGame tg;
     static GameSelect select = CONWAY;
-    debounce(move_cw, move_ccw, game_select);
+    debounce(move_cw, move_ccw, rotate, game_select);
     if (game_select) {
         select++;
         g.reset();
@@ -46,7 +53,7 @@ void frame_processing(hls::stream<pixel> &output, hls::stream<pixel> &input, boo
             cg.run(input, output, move_ccw << 1 | move_cw);
             break;
         case TETRIS:
-            tg.run(input, output, move_ccw << 1 | move_cw);
+            tg.run(input, output, move_ccw << 1 | move_cw, rotate);
             break;
     }
 }

@@ -28,7 +28,7 @@ typedef struct TetrisGame {
     void get_subsquare(ap_uint<4> &x, ap_uint<4> &y, ap_uint<2> direction, ap_uint<2> id);
     void rotate(ap_uint<2> turn);
     void move(ap_int<2> direction);
-    void run(hls::stream<pixel> &input, hls::stream<pixel> &output, ap_uint<2> move);
+    void run(hls::stream<pixel> &input, hls::stream<pixel> &output, ap_uint<2> move, bool rotate);
 } TetrisGame;
 
 #endif

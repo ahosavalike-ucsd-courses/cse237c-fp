@@ -44,7 +44,7 @@ int main() {
     inpix.data = 0x0;
     std::cout << "Starting Frame Gen:" << std::endl;
     bool ok = false;
-    bool b1 = 0, b2 = 0, b3 = 0;
+    bool b1 = 0, b2 = 0, b3 = 0, b4 = 0;
     // Fill fb
     char b = 0;
     while (true) {
@@ -55,8 +55,9 @@ int main() {
                 in << inpix;
                 b1 = b == 'd';
                 b2 = b == 'a';
-                b3 = b == 'r';
-                frame_processing(out, in, b1, b2, b3);
+                b3 = b == 'w';
+                b4 = b == 'r';
+                frame_processing(out, in, b1, b2, b3, b4);
                 out >> pix;
                 fb[i][j] = pix.data.toRGB();
                 assert((pix.user == 0) != (i == 0 && j == 0));

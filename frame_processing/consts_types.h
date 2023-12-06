@@ -6,8 +6,15 @@
 
 #define FRAME_HEIGHT 72
 #define FRAME_WIDTH 128
+
+#ifdef __SYNTHESIS__
 #define FC 63
 #define FCB 6
+#else
+#define FC 3
+#define FCB 2
+#endif
+
 #define FONTX 2
 #define FONTY 4
 
