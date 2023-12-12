@@ -312,7 +312,7 @@ void TetrisGame::update(ap_int<2> move, ap_int<2> turn) {
         // Clear full lines
         // for (int i = 15; i >= 0; i--) {
         if (filled_counts[0] == 16) {
-            for (int j = 0; j >= 2; j--) {
+            for (int j = 15; j >= 2; j--) {
                 for (int k = 0; k < 16; k++) {
 #pragma HLS UNROLL
                     world[(j << 4) | k] = world[((j - 1) << 4) | k];
