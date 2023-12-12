@@ -272,10 +272,9 @@ void TetrisGame::update(ap_int<2> move, ap_int<2> turn) {
 #pragma HLS UNROLL
         ap_uint<4> x, y;
         get_subsquare(x, y, active.direction, i);
-        y += 1;
         // dbg("x,y: %d, %d\n", x, y);
         // printout(world);
-        if (world[(ap_uint<8>(y) << 4) | (x)] != 0 || y == 15) valid = 0;
+        if (y == 15 || world[(ap_uint<8>(y + 1) << 4) | (x)] != 0) valid = 0;
     }
     if (valid) active.y += 1;
     for (int i = 0; i < 4; i++) {
@@ -310,17 +309,15 @@ void TetrisGame::update(ap_int<2> move, ap_int<2> turn) {
 
     if (!valid) {
         // Clear full lines
-        // for (int i = 15; i >= 0; i--) {
-        if (filled_counts[0] == 16) {
-            for (int j = 15; j >= 2; j--) {
+        if (filled_counts[15] == 16) {
+            for (int j = 15; j > 0; j--) {
                 for (int k = 0; k < 16; k++) {
 #pragma HLS UNROLL
                     world[(j << 4) | k] = world[((j - 1) << 4) | k];
                 }
-                filled_counts[0] = filled_counts[1];
+                filled_counts[j] = filled_counts[j - 1];
             }
         }
-        // }
     }
 }
 
