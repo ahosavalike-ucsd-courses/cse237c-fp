@@ -57,26 +57,30 @@ void ConwayGame::update(ap_uint<2> move) {
 
     ap_uint<4> neighbors[CONWAY_FRAME_WIDTH][CONWAY_FRAME_HEIGHT];
 #pragma HLS ARRAY_PARTITION type = complete variable = neighbors
-    for (ap_uint<CONWAY_BIT_WIDTH + 1> i = 0; i < CONWAY_FRAME_WIDTH; i++) {
+    for (ap_uint<CONWAY_BIT_WIDTH + 1> j = 0; j < CONWAY_FRAME_HEIGHT; j++) {
 #pragma HLS UNROLL
-        for (ap_uint<CONWAY_BIT_WIDTH> j = 0; j < CONWAY_FRAME_HEIGHT; j++) {
+        for (ap_uint<CONWAY_BIT_WIDTH + 1> i = 0; i < CONWAY_FRAME_WIDTH; i++) {
 #pragma HLS UNROLL
-            // Wrap around edges
-            for (ap_int<3> k = -1; k < 2; k++) {
+            // Dont wrap around edges
+            ap_uint<4> val = 0;
+            for (ap_int<4> k = -1; k < 2; k++) {
 #pragma HLS UNROLL
-                for (ap_int<3> l = -1; l < 2; l++) {
+                for (ap_int<4> l = -1; l < 2; l++) {
 #pragma HLS UNROLL
-                    neighbors[i][j] += world[ap_uint<CONWAY_BIT_WIDTH + 1>(i + k)][ap_uint<CONWAY_BIT_WIDTH>(j + l)].live;
+                    ap_uint<CONWAY_BIT_WIDTH + 1> x = i + k, y = j + l;
+                    if (x >= CONWAY_FRAME_WIDTH || y >= CONWAY_FRAME_HEIGHT) continue;
+                    val += world[x][y].live;
                 }
             }
+            neighbors[i][j] = val;
         }
     }
-    for (ap_uint<CONWAY_BIT_WIDTH + 1> i = 0; i < CONWAY_FRAME_WIDTH; i++) {
+    for (ap_uint<CONWAY_BIT_WIDTH + 1> j = 0; j < CONWAY_FRAME_HEIGHT; j++) {
 #pragma HLS UNROLL
-        for (ap_uint<CONWAY_BIT_WIDTH> j = 0; j < CONWAY_FRAME_HEIGHT; j++) {
+        for (ap_uint<CONWAY_BIT_WIDTH + 1> i = 0; i < CONWAY_FRAME_WIDTH; i++) {
 #pragma HLS UNROLL
             world[i][j].chaos = 0;
-            world[i][j].live = (neighbors[i][j] - (world[i][j].live & 1)) == 3 || ((neighbors[i][j] == 3) && (world[i][j].live & 1));
+            world[i][j].live = neighbors[i][j] == 3 || (world[i][j].live && neighbors[i][j] == 4);
         }
     }
     // Apply rules, clear chaos bit
