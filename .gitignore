@@ -19,3 +19,5 @@
 !frame_buffer/solution1/
 !frame_buffer/solution1/script.tcl
 !frame_buffer/solution1/directives.tcl
+!vivado
+!vivado/*
